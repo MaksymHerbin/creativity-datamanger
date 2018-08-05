@@ -1,7 +1,7 @@
 package com.creativity.datamanager.file.storage;
 
 import com.creativity.datamanager.domain.Photo;
-import com.drew.imaging.ImageProcessingException;
+import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +14,16 @@ import java.util.UUID;
 @Service
 public class DefaultPhotosStorageService implements PhotosStorageService {
 
+    private final File targetPhotosFolder;
+
+    public DefaultPhotosStorageService() {
+        String targetPhotosFolder = System.getenv("default.target.folder");
+        Preconditions.checkNotNull(targetPhotosFolder, "default.target.folder environment variable was not specified, and is mandatory");
+        this.targetPhotosFolder = new File(targetPhotosFolder);
+    }
+
     @Override
-    public Set<String> copyFile(String albumName, File targetFolder, File sourceFolder) throws IOException, ImageProcessingException {
+    public Set<String> copyFile(String albumName, File sourceFolder) throws IOException {
         Set<String> fileIds = new HashSet<>();
 
         if (!sourceFolder.exists() || !sourceFolder.isDirectory()) {
@@ -24,7 +32,7 @@ public class DefaultPhotosStorageService implements PhotosStorageService {
         for (File photo : sourceFolder.listFiles(file -> !file.getName().equals(".DS_Store"))) {
             if (photo.isFile()) {
                 String newId = albumName + "-" + UUID.randomUUID().toString() + ".png";
-                File targetFile = new File(targetFolder.getAbsolutePath() + "/" + newId);
+                File targetFile = new File(targetPhotosFolder.getAbsolutePath() + "/" + newId);
                 Files.copy(photo, targetFile);
                 fileIds.add(newId);
             }
@@ -33,7 +41,12 @@ public class DefaultPhotosStorageService implements PhotosStorageService {
     }
 
     @Override
-    public boolean photoFileExists(Photo photo, File targetFolder) {
-        return new File(targetFolder.getAbsolutePath() + "/" + photo.getId()).exists();
+    public File getTargetFolder() {
+        return targetPhotosFolder;
+    }
+
+    @Override
+    public boolean photoFileExists(Photo photo) {
+        return new File(targetPhotosFolder.getAbsolutePath() + "/" + photo.getId()).exists();
     }
 }
