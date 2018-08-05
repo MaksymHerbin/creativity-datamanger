@@ -16,4 +16,15 @@ public class ChainOfAttributeEnrichers implements AttributesEnricher {
     public void enrich(Photo photo) {
         attributesEnrichers.forEach(enricher -> enricher.enrich(photo));
     }
+
+    @Override
+    public boolean checkEnriched(Photo photo) {
+        return attributesEnrichers.stream().allMatch(enricher -> enricher.checkEnriched(photo));
+    }
+
+    @Override
+    public void enrichIfMissing(Photo photo) {
+        attributesEnrichers.forEach(enricher -> enricher.enrichIfMissing(photo));
+    }
+
 }

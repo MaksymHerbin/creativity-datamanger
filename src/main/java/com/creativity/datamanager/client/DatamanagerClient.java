@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -41,6 +42,26 @@ public class DatamanagerClient {
             photoRepository.save(photo);
         }
         return "Successfully copied all files from folder " + downloadFrom + " to " + photosStorageService.getTargetFolder().getAbsolutePath() + "\n Ids:\n" + filesCreated;
+    }
+
+    @ShellMethod("Checks how many photos have any missing attributes")
+    public String check_missing_attributes() {
+        List<Photo> allPhotos = photoRepository.findAll();
+        long notEnriched = allPhotos.stream().filter(photo -> !attributesEnricher.checkEnriched(photo)).count();
+        return "There are " + notEnriched + " photos that are missing some attributes";
+    }
+
+    @ShellMethod("Populate missing attributes")
+    public String populate_missing_attributes() {
+        List<Photo> photosWithMissingAttributes = photoRepository.findAll()
+                .stream()
+                .filter(photo -> !attributesEnricher.checkEnriched(photo))
+                .collect(Collectors.toList());
+
+        photosWithMissingAttributes.forEach(photo -> attributesEnricher.enrichIfMissing(photo));
+        photoRepository.saveAll(photosWithMissingAttributes);
+
+        return photosWithMissingAttributes.size() + " were enriched with missing attributes";
     }
 
     @ShellMethod("Validate all photos in database have matching file in target folder")

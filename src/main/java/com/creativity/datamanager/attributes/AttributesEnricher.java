@@ -6,4 +6,11 @@ public interface AttributesEnricher {
 
     void enrich(Photo photo);
 
+    boolean checkEnriched(Photo photo);
+
+    default void enrichIfMissing(Photo photo) {
+        if (!checkEnriched(photo)) {
+            enrich(photo);
+        }
+    }
 }

@@ -40,6 +40,11 @@ public class LabelsEnricher implements AttributesEnricher {
         photo.setLabels(labels);
     }
 
+    @Override
+    public boolean checkEnriched(Photo photo) {
+        return photo.getLabels() != null;
+    }
+
     private List<Label> getLabels(byte[] compressedImage) {
         DetectLabelsRequest request = new DetectLabelsRequest()
                 .withImage(new Image().withBytes(ByteBuffer.wrap(compressedImage)))
