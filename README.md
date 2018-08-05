@@ -11,4 +11,10 @@ mvn clean install package
 1) Make sure you have MongoDB running on localhost on 27017 port 
 and database with name "creativity" exits
 
-2) java -jar target/datamanager-1.0-SNAPSHOT.jar
+2) Set up mandatory environment variables
+
+| Name | Purpose |
+| ------ | ----- |
+| default.target.folder | A folder where all photos will be loaded from different sources, to form a dataset |
+
+3) java -jar target/datamanager-1.0-SNAPSHOT.jar
