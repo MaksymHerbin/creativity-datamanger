@@ -4,6 +4,7 @@ import com.creativity.datamanager.domain.Photo;
 import com.creativity.datamanager.file.storage.PhotosStorageService;
 import com.creativity.datamanager.repository.ExampleRepository;
 import com.creativity.datamanager.repository.PhotoRepository;
+import com.drew.imaging.ImageProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
@@ -60,7 +61,7 @@ public class DatamanagerClient {
 
     @ShellMethod("Load photos from specified folder")
     @ShellMethodAvailability("operationWithPhotos")
-    public String load_photos(String albumName, String downloadFrom) throws IOException {
+    public String load_photos(String albumName, String downloadFrom) throws IOException, ImageProcessingException {
         Set<String> filesCreated = photosStorageService.copyFile(albumName, targetPhotosFolder, new File(downloadFrom));
         for (String photoId : filesCreated) {
             photoRepository.save(new Photo(photoId));

@@ -1,9 +1,8 @@
 package com.creativity.datamanager.file.storage;
 
-import com.creativity.datamanager.compression.ImageCompressor;
 import com.creativity.datamanager.domain.Photo;
+import com.drew.imaging.ImageProcessingException;
 import com.google.common.io.Files;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -15,11 +14,8 @@ import java.util.UUID;
 @Service
 public class DefaultPhotosStorageService implements PhotosStorageService {
 
-    @Autowired
-    private ImageCompressor imageCompressor;
-
     @Override
-    public Set<String> copyFile(String albumName, File targetFolder, File sourceFolder) throws IOException {
+    public Set<String> copyFile(String albumName, File targetFolder, File sourceFolder) throws IOException, ImageProcessingException {
         Set<String> fileIds = new HashSet<>();
 
         if (!sourceFolder.exists() || !sourceFolder.isDirectory()) {
@@ -29,7 +25,7 @@ public class DefaultPhotosStorageService implements PhotosStorageService {
             if (photo.isFile()) {
                 String newId = albumName + "-" + UUID.randomUUID().toString() + ".png";
                 File targetFile = new File(targetFolder.getAbsolutePath() + "/" + newId);
-                Files.write(imageCompressor.compress(photo), targetFile);
+                Files.copy(photo, targetFile);
                 fileIds.add(newId);
             }
         }
