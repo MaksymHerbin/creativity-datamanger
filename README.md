@@ -13,8 +13,8 @@ and database with name "creativity" exits
 
 2) Set up mandatory environment variables
 
-| Name | Purpose |
-| ------ | ----- |
-| default.target.folder | A folder where all photos will be loaded from different sources, to form a dataset |
+| Name | Purpose | Example |
+| -----| ------- | ------- |
+| default.target.folder | A full path to folder where all photos will be loaded from different sources, to form a dataset | /Users/YourUser/photos |
 
 3) java -jar target/datamanager-1.0-SNAPSHOT.jar
