@@ -13,4 +13,6 @@ public interface PhotosStorageService {
     File getTargetFolder();
 
     boolean photoFileExists(Photo photo);
+
+    File getPhoto(String id);
 }

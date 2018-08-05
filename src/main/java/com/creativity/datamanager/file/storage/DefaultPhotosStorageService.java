@@ -49,4 +49,9 @@ public class DefaultPhotosStorageService implements PhotosStorageService {
     public boolean photoFileExists(Photo photo) {
         return new File(targetPhotosFolder.getAbsolutePath() + "/" + photo.getId()).exists();
     }
+
+    @Override
+    public File getPhoto(String id) {
+        return new File(targetPhotosFolder.getAbsolutePath() + "/" + id);
+    }
 }

@@ -1,9 +1,11 @@
 package com.creativity.datamanager.client;
 
+import com.creativity.datamanager.attributes.AttributesEnricher;
 import com.creativity.datamanager.domain.Photo;
 import com.creativity.datamanager.file.storage.PhotosStorageService;
 import com.creativity.datamanager.repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
@@ -21,6 +23,9 @@ public class DatamanagerClient {
     private PhotoRepository photoRepository;
     @Autowired
     private PhotosStorageService photosStorageService;
+    @Autowired
+    @Qualifier("attributeEnricher")
+    private AttributesEnricher attributesEnricher;
 
     @ShellMethod("List all existing photos in database")
     public List<Photo> list_all() {
@@ -31,7 +36,9 @@ public class DatamanagerClient {
     public String load_photos(String albumName, String downloadFrom) throws IOException {
         Set<String> filesCreated = photosStorageService.copyFile(albumName, new File(downloadFrom));
         for (String photoId : filesCreated) {
-            photoRepository.save(new Photo(photoId));
+            Photo photo = new Photo(photoId);
+            attributesEnricher.enrich(photo);
+            photoRepository.save(photo);
         }
         return "Successfully copied all files from folder " + downloadFrom + " to " + photosStorageService.getTargetFolder().getAbsolutePath() + "\n Ids:\n" + filesCreated;
     }
